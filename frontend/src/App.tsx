@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import TodayView from './pages/TodayView'
 import BacklogView from './pages/BacklogView'
 import DoneView from './pages/DoneView'
+import MonthlyView from './pages/MonthlyView'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('planner_token')
@@ -20,6 +21,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <TodayView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/monthly"
+        element={
+          <ProtectedRoute>
+            <MonthlyView />
           </ProtectedRoute>
         }
       />

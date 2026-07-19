@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
 from app.api.tasks import router as tasks_router
 from app.api.health import router as health_router
+from app.api.timetable import router as timetable_router
 from app.jobs.scheduler import start_scheduler, stop_scheduler
 from app.jobs.startup_catchup import run_startup_catchup
 
@@ -39,4 +40,5 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(tasks_router)
+app.include_router(timetable_router)
 app.include_router(health_router)
