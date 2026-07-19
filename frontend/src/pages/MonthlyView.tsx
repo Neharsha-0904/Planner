@@ -35,9 +35,8 @@ export default function MonthlyView() {
   const { data: allTasks } = useQuery<Task[]>({
     queryKey: ['tasks', 'all-for-month', year, month],
     queryFn: async () => {
-      const { data } = await client.get('/tasks?view=backlog')
-      const { data: todayTasks } = await client.get('/tasks?view=today')
-      return [...todayTasks, ...data]
+      const { data } = await client.get('/tasks?view=all')
+      return data
     },
   })
 

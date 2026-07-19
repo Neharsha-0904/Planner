@@ -16,7 +16,7 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 @router.get("", response_model=list[TaskRead])
 def list_tasks(
-    view: str = Query("today", pattern="^(today|backlog|done)$"),
+    view: str = Query("today", pattern="^(today|backlog|done|all)$"),
     priority: Priority | None = None,
     tags: str | None = None,
     db: Session = Depends(get_db),

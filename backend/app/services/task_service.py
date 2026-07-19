@@ -54,6 +54,11 @@ def get_tasks_for_view(
         query = query.filter(Task.status == TaskStatus.DONE)
         query = query.order_by(Task.completed_at.desc())
 
+    elif view == "all":
+        # All non-done tasks (for calendar view)
+        query = query.filter(Task.status != TaskStatus.DONE)
+        query = query.order_by(Task.scheduled_for.asc())
+
     # Apply optional filters
     if priority is not None:
         query = query.filter(Task.priority == priority)
