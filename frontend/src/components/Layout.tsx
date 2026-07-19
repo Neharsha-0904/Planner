@@ -3,9 +3,9 @@ import { NavLink, useNavigate } from 'react-router-dom'
 const navItems = [
   { to: '/', label: 'Today', icon: '📅' },
   { to: '/monthly', label: 'Monthly', icon: '🗓️' },
+  { to: '/roadmap', label: 'Roadmap', icon: '🗺️' },
   { to: '/backlog', label: 'Backlog', icon: '📋' },
   { to: '/done', label: 'Done', icon: '✅' },
-  { to: '#', label: 'Roadmap', icon: '🗺️', disabled: true },
   { to: '#', label: 'Finance', icon: '💰', disabled: true },
 ]
 
