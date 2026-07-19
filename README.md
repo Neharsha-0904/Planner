@@ -26,7 +26,7 @@
 
 ## 🎯 What is this?
 
-A single-app command center built for a grad student running an M.Tech AI program alongside a 14-month ML/AI career roadmap. One shared database — tasks, timetable, milestones, contacts, and finance all live together. New modules plug into the same spine; never a separate mini-app.
+A single-app personal command center for grad students managing academics, career prep, and daily planning. One shared database — tasks, timetable, milestones, contacts, and finance all live together. New modules plug into the same spine; never a separate mini-app.
 
 **Built for daily use:** open it every morning, see what matters, get nudged when things slip.
 
@@ -60,12 +60,12 @@ A single-app command center built for a grad student running an M.Tech AI progra
 <tr>
 <td width="50%">
 
-### 🗺️ Career Roadmap
-- 14 milestones (courses, certs, projects)
-- MS AI Engineer ✓ | Claude Developer ✓
-- Andrew Ng → Karpathy → 3B1B → NeetCode
-- AWS SAA, RAG project, ML pipeline
-- 41 tasks planned through September
+### 🗺️ Roadmap Tracking
+- Milestone-based progress tracking
+- Courses, certifications, projects
+- Visual skill dependency map (SVG)
+- Link tasks to milestones for auto-progress
+- Customizable per user
 
 </td>
 <td width="50%">

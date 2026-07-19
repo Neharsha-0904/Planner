@@ -56,17 +56,8 @@ def run_startup_catchup():
                 count = rollover_tasks(db, user.id)
                 logger.info("Startup rollover: moved %d tasks to today for %s", count, user.name)
 
-            # 2. Morning brief if not sent today
-            brief_sent_today = (
-                db.query(EmailLog)
-                .filter(
-                    EmailLog.user_id == user.id,
-                    EmailLog.type == NotificationType.MORNING_BRIEF,
-                    EmailLog.sent_at >= datetime.combine(today, datetime.min.time()).replace(tzinfo=tz),
-                )
-                .first()
-            )
-            if not brief_sent_today:
+            # 2. Always send morning brief on startup (after 7am)
+            if now.hour >= 7:
                 subject, body = compose_morning_brief(db, user.id, user.name)
                 email_service = get_email_service()
                 recipients = [user.email]
