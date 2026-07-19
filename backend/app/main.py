@@ -8,6 +8,7 @@ from app.api.auth import router as auth_router
 from app.api.tasks import router as tasks_router
 from app.api.health import router as health_router
 from app.jobs.scheduler import start_scheduler, stop_scheduler
+from app.jobs.startup_catchup import run_startup_catchup
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s — %(message)s")
 
@@ -16,6 +17,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 async def lifespan(app: FastAPI):
     # Startup
     start_scheduler()
+    run_startup_catchup()  # Catch up on anything missed while laptop was off
     yield
     # Shutdown
     stop_scheduler()

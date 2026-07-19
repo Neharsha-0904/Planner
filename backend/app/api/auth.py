@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from pydantic import BaseModel
 
 from app.database import get_db
 from app.models.user import User
@@ -54,3 +55,19 @@ def update_fcm_token(
     current_user.fcm_token = body.fcm_token
     db.commit()
     return {"status": "ok"}
+
+
+class NotificationEmailsUpdate(BaseModel):
+    emails: list[str]
+
+
+@router.put("/notification-emails")
+def update_notification_emails(
+    body: NotificationEmailsUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Add extra emails (university, work) to receive briefs and alerts."""
+    current_user.notification_emails = body.emails
+    db.commit()
+    return {"status": "ok", "notification_emails": body.emails}
