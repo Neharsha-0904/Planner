@@ -53,6 +53,14 @@ export default function RoadmapView() {
         </p>
       </div>
 
+      {/* Skill Map Diagram */}
+      <div className="bg-bg-card border border-border rounded-lg p-4 mb-6">
+        <h2 className="text-sm font-semibold text-text-secondary uppercase mb-3">Skill Dependency Map</h2>
+        <div className="overflow-x-auto">
+          <SkillMap done={done.map(m => m.title)} />
+        </div>
+      </div>
+
       {/* Progress bar */}
       <div className="bg-bg-card border border-border rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between mb-2">
@@ -118,5 +126,139 @@ function Section({ title, milestones }: { title: string; milestones: Milestone[]
         ))}
       </div>
     </div>
+  )
+}
+
+// ─── Skill Map Visual ───────────────────────────────────────────────────────
+
+interface SkillNode {
+  id: string
+  label: string
+  x: number
+  y: number
+  status: 'done' | 'active' | 'upcoming'
+}
+
+interface SkillEdge {
+  from: string
+  to: string
+}
+
+const nodes: SkillNode[] = [
+  // Row 1: Foundations
+  { id: 'python', label: 'Python Deep', x: 80, y: 40, status: 'active' },
+  { id: 'math', label: '3B1B Math', x: 250, y: 40, status: 'active' },
+  { id: 'dsa', label: 'DSA/LeetCode', x: 420, y: 40, status: 'active' },
+  // Row 2: ML Core
+  { id: 'andrew_ml', label: 'Andrew Ng ML', x: 80, y: 120, status: 'upcoming' },
+  { id: 'andrew_dl', label: 'Deep Learning', x: 250, y: 120, status: 'upcoming' },
+  { id: 'karpathy', label: 'Karpathy ZtH', x: 420, y: 120, status: 'upcoming' },
+  // Row 3: Advanced
+  { id: 'mlops', label: 'MLOps Spec', x: 80, y: 200, status: 'upcoming' },
+  { id: 'hf_nlp', label: 'HuggingFace NLP', x: 250, y: 200, status: 'upcoming' },
+  { id: 'chip', label: 'Chip Huyen Book', x: 420, y: 200, status: 'upcoming' },
+  // Row 4: Certs
+  { id: 'aws_aip', label: 'AWS AI Pract ✓', x: 580, y: 40, status: 'done' },
+  { id: 'ai102', label: 'MS AI-102 ✓', x: 580, y: 90, status: 'done' },
+  { id: 'claude', label: 'Claude Arch ✓', x: 580, y: 140, status: 'done' },
+  { id: 'aws_ml', label: 'AWS ML Eng', x: 580, y: 200, status: 'upcoming' },
+  { id: 'aws_saa', label: 'AWS SAA', x: 580, y: 250, status: 'upcoming' },
+  // Row 5: Projects
+  { id: 'p1', label: 'Fraud Detection', x: 160, y: 290, status: 'upcoming' },
+  { id: 'p2', label: 'Multi-Agent RAG', x: 360, y: 290, status: 'upcoming' },
+  { id: 'portfolio', label: 'Portfolio Site', x: 560, y: 340, status: 'upcoming' },
+  // Goal
+  { id: 'goal', label: '🎯 ML Engineer', x: 330, y: 380, status: 'upcoming' },
+]
+
+const edges: SkillEdge[] = [
+  { from: 'python', to: 'andrew_ml' },
+  { from: 'math', to: 'andrew_ml' },
+  { from: 'math', to: 'karpathy' },
+  { from: 'andrew_ml', to: 'andrew_dl' },
+  { from: 'andrew_dl', to: 'karpathy' },
+  { from: 'andrew_dl', to: 'mlops' },
+  { from: 'karpathy', to: 'hf_nlp' },
+  { from: 'mlops', to: 'p1' },
+  { from: 'andrew_ml', to: 'p1' },
+  { from: 'hf_nlp', to: 'p2' },
+  { from: 'karpathy', to: 'p2' },
+  { from: 'p1', to: 'p2' },
+  { from: 'mlops', to: 'aws_ml' },
+  { from: 'aws_ml', to: 'aws_saa' },
+  { from: 'p2', to: 'portfolio' },
+  { from: 'p1', to: 'goal' },
+  { from: 'p2', to: 'goal' },
+  { from: 'aws_saa', to: 'goal' },
+  { from: 'dsa', to: 'goal' },
+  { from: 'chip', to: 'goal' },
+  { from: 'portfolio', to: 'goal' },
+]
+
+function SkillMap({ done }: { done: string[] }) {
+  const getStatus = (node: SkillNode): 'done' | 'active' | 'upcoming' => {
+    if (node.status === 'done') return 'done'
+    if (done.some(d => node.label.toLowerCase().includes(d.toLowerCase().slice(0, 8)))) return 'done'
+    return node.status
+  }
+
+  const colors = {
+    done: { fill: '#34D399', stroke: '#059669', text: '#000' },
+    active: { fill: '#7C6BF0', stroke: '#5B4BD4', text: '#fff' },
+    upcoming: { fill: '#1A2130', stroke: '#2A3346', text: '#E7EAF0' },
+  }
+
+  const nodeMap = Object.fromEntries(nodes.map(n => [n.id, n]))
+
+  return (
+    <svg viewBox="0 0 700 420" className="w-full h-auto min-h-[300px]">
+      {/* Edges */}
+      {edges.map((e, i) => {
+        const from = nodeMap[e.from]
+        const to = nodeMap[e.to]
+        if (!from || !to) return null
+        return (
+          <line
+            key={i}
+            x1={from.x}
+            y1={from.y + 12}
+            x2={to.x}
+            y2={to.y - 12}
+            stroke="#2A3346"
+            strokeWidth="1"
+            opacity="0.6"
+          />
+        )
+      })}
+      {/* Nodes */}
+      {nodes.map(node => {
+        const status = getStatus(node)
+        const c = colors[status]
+        return (
+          <g key={node.id}>
+            <rect
+              x={node.x - 55}
+              y={node.y - 14}
+              width={110}
+              height={28}
+              rx={6}
+              fill={c.fill}
+              stroke={c.stroke}
+              strokeWidth={1.5}
+            />
+            <text
+              x={node.x}
+              y={node.y + 4}
+              textAnchor="middle"
+              fill={c.text}
+              fontSize="9"
+              fontWeight="500"
+            >
+              {node.label}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
   )
 }
