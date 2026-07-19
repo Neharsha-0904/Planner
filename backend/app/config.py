@@ -1,4 +1,10 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings
+
+# Look for .env in backend/ first, then project root
+_env_file = Path(__file__).resolve().parent.parent / ".env"
+if not _env_file.exists():
+    _env_file = Path(__file__).resolve().parent.parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -22,7 +28,7 @@ class Settings(BaseSettings):
 
     FIREBASE_CREDENTIALS_PATH: str = ""
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {"env_file": str(_env_file), "extra": "ignore"}
 
 
 settings = Settings()

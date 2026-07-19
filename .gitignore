@@ -16,6 +16,10 @@ build/
 .env
 !.env.example
 
+# Firebase service account (secret)
+firebase-service-account.json
+*-firebase-adminsdk-*.json
+
 # IDE
 .vscode/
 .idea/
