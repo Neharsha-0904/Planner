@@ -45,3 +45,7 @@ htmlcov/
 
 # Docker
 pgdata/
+
+# Private roadmap (never push)
+backend/seeds/private_roadmap.py
+backend/seeds/my_plan.py
