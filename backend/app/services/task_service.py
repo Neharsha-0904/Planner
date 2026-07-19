@@ -37,7 +37,8 @@ def get_tasks_for_view(
         query = query.filter(
             and_(
                 Task.status.in_([TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.BACKLOG]),
-                (Task.scheduled_for != today) | (Task.scheduled_for.is_(None)),
+                # Only past-due or unscheduled tasks — NOT future-planned ones
+                (Task.scheduled_for < today) | (Task.scheduled_for.is_(None)),
             )
         )
         priority_order = case(

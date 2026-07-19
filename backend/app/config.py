@@ -28,6 +28,11 @@ class Settings(BaseSettings):
 
     FIREBASE_CREDENTIALS_PATH: str = ""
 
+    # WhatsApp Cloud API (free 1000 msgs/month)
+    WA_PHONE_NUMBER_ID: str = ""
+    WA_ACCESS_TOKEN: str = ""
+    WA_MY_PHONE: str = ""  # Your number with country code, no + (e.g. 919876543210)
+
     model_config = {"env_file": str(_env_file), "extra": "ignore"}
 
 
