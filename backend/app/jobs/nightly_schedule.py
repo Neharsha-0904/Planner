@@ -6,6 +6,7 @@ from datetime import date, timedelta
 
 from app.database import SessionLocal
 from app.models.user import User
+from app.models.task import Task, TaskStatus, Priority
 from app.models.class_slot import ClassSlot
 from app.services.email_service import get_email_service
 from app.integrations.whatsapp import send_whatsapp_message
@@ -50,8 +51,41 @@ def run_nightly_schedule():
                 lines.append(f"      Room: {s.location or 'TBD'}")
                 lines.append("")
 
+            # Tomorrow's tasks
+            tomorrow_tasks = (
+                db.query(Task)
+                .filter(Task.user_id == user.id, Task.scheduled_for == tomorrow, Task.status != TaskStatus.DONE)
+                .all()
+            )
+            if tomorrow_tasks:
+                lines.append(f"TOMORROW'S TASKS ({len(tomorrow_tasks)}):")
+                for t in tomorrow_tasks:
+                    pri = "P0" if t.priority == Priority.P0 else "P1" if t.priority == Priority.P1 else "P2"
+                    lines.append(f"  [{pri}] {t.title}")
+                lines.append("")
+
+            # Backlog count
+            backlog = (
+                db.query(Task)
+                .filter(
+                    Task.user_id == user.id,
+                    Task.status.in_([TaskStatus.OPEN, TaskStatus.IN_PROGRESS]),
+                    Task.scheduled_for < date.today(),
+                )
+                .all()
+            )
+            if backlog:
+                lines.append(f"BACKLOG: {len(backlog)} overdue task(s)")
+                for t in backlog[:5]:
+                    lines.append(f"  - {t.title} (rolled over {t.rolled_over_count}x)")
+                if len(backlog) > 5:
+                    lines.append(f"  ...and {len(backlog) - 5} more")
+                lines.append("")
+
+            lines.append("Good night! Be ready by 8:30am.")
+
             body = "\n".join(lines)
-            subject = f"[Planner] Tomorrow's Classes - {DAY_NAMES[dow]}, {tomorrow.strftime('%b %d')}"
+            subject = f"[Planner] Tomorrow's Schedule - {DAY_NAMES[dow]}, {tomorrow.strftime('%b %d')}"
 
             # Email
             email_service = get_email_service()

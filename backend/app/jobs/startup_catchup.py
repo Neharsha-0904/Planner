@@ -24,6 +24,7 @@ from app.services.task_service import rollover_tasks
 from app.services.morning_brief import compose_morning_brief
 from app.services.email_service import get_email_service
 from app.services.notification_service import send_push_to_user
+from app.integrations.whatsapp import send_whatsapp_message
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,11 @@ def run_startup_catchup():
                 recipients = list(set(recipients))
                 email_service.send(to=recipients, subject=subject, body=body)
                 send_push_to_user(user, subject, body[:200])
+
+                # WhatsApp morning brief
+                if settings.WA_MY_PHONE:
+                    wa_msg = f"*{subject}*\n\n{body[:500]}"
+                    send_whatsapp_message(settings.WA_MY_PHONE, wa_msg)
 
                 from app.models.notification import EmailStatus
                 log_entry = EmailLog(
