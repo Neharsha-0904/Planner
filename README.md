@@ -5,6 +5,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+  <img src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" />
 </p>
 
 <h1 align="center">⚡ Planner</h1>
@@ -49,10 +50,12 @@ A single-app personal command center for grad students managing academics, caree
 <td width="50%">
 
 ### 🔔 Smart Notifications
-- **Class reminder** — push 10 min before
+- **Morning brief** — email + WhatsApp on startup
+- **Class reminder** — WhatsApp 10 min before
+- **9 PM nightly** — tomorrow's classes + tasks + backlog
 - **P0 alerts** — hourly during waking hours
-- **Daily backlog summary** — 8:30am push
-- **Morning brief** — emailed to all your addresses
+- **Daily backlog summary** — 8:30am
+- Channels: Gmail SMTP + WhatsApp Cloud API + Firebase Push
 - Gmail SMTP (no spam — from your own account)
 
 </td>
@@ -102,6 +105,9 @@ A single-app personal command center for grad students managing academics, caree
 │   ┌─────────────────┐  ┌────────────────────────┐   │
 │   │  Gmail SMTP     │  │  Firebase FCM (push)   │   │
 │   └─────────────────┘  └────────────────────────┘   │
+│   ┌──────────────────────────────────────────────┐   │
+│   │       WhatsApp Cloud API (free 1K/mo)        │   │
+│   └──────────────────────────────────────────────┘   │
 │                                                      │
 │   ┌──────────────────────────────────────────────┐   │
 │   │       SQLAlchemy (sync) + Alembic            │   │
@@ -184,13 +190,14 @@ SMTP_PASSWORD=xxxx-xxxx-xxxx-xxxx
 
 ## ⏰ Scheduled Jobs
 
-| Job | When | What |
-|-----|------|------|
-| 🔄 Auto-rollover | 00:01 | Past-due → today, `rolled_over_count++` |
-| ☀️ Morning brief | 07:00 | Email to all configured addresses |
-| 📚 Class reminder | Every 1 min | Push 10 min before each class |
-| 🔴 P0 alert | Hourly (7–22) | Push if critical tasks overdue |
-| 📋 Backlog summary | 08:30 | Push with full backlog stats |
+| Job | When | Channels | What |
+|-----|------|----------|------|
+| 🔄 Auto-rollover | 00:01 | DB | Past-due → today, `rolled_over_count++` |
+| ☀️ Morning brief | On startup (after 7am) | Email + WhatsApp | Today's classes + tasks |
+| 📚 Class reminder | Every 1 min | WhatsApp + Push | 10 min before each class |
+| 🔴 P0 alert | Hourly (7–22) | Push | Critical tasks overdue |
+| 📋 Backlog summary | 08:30 | Push | Full backlog stats |
+| 🌙 Nightly schedule | 21:00 | Email + WhatsApp | Tomorrow's classes + tasks + backlog |
 
 ---
 
