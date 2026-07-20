@@ -17,6 +17,7 @@ def start_scheduler():
     from app.jobs.morning_brief import run_morning_brief
     from app.jobs.class_reminder import run_class_reminder
     from app.jobs.backlog_alert import run_p0_backlog_alert, run_daily_backlog_summary
+    from app.jobs.nightly_schedule import run_nightly_schedule
 
     # Daily rollover at midnight
     scheduler.add_job(
@@ -58,10 +59,19 @@ def start_scheduler():
         replace_existing=True,
     )
 
+    # Nightly schedule — 9 PM, send tomorrow's classes via email + WhatsApp
+    scheduler.add_job(
+        run_nightly_schedule,
+        trigger=CronTrigger(hour=21, minute=0),
+        id="nightly_schedule",
+        replace_existing=True,
+    )
+
     scheduler.start()
     logger.info(
         "APScheduler started with jobs: daily_rollover (00:01), morning_brief (%02d:00), "
-        "class_reminder (every 1min), p0_backlog_alert (hourly 7-22), daily_backlog_summary (08:30)",
+        "class_reminder (every 1min), p0_backlog_alert (hourly 7-22), daily_backlog_summary (08:30), "
+        "nightly_schedule (21:00)",
         settings.MORNING_BRIEF_HOUR,
     )
 
