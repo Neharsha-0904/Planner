@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.class_slot import ClassSlot
 from app.services.email_service import get_email_service
 from app.integrations.whatsapp import send_whatsapp_message
+from app.integrations.telegram import send_telegram
 from app.config import settings
 
 db = SessionLocal()
@@ -55,9 +56,20 @@ email = get_email_service()
 email_ok = email.send(to=settings.SMTP_USER, subject=subject, body=body)
 print(f"Email: {'SENT' if email_ok else 'FAILED'}")
 
+# Send Telegram
+tg_body = "\n".join([
+    f"<b>{subject}</b>",
+    "",
+] + [
+    f"<b>{s.start_time.strftime('%H:%M')}–{s.end_time.strftime('%H:%M')}</b>  {s.name}\n    {s.location}"
+    for s in slots
+])
+tg_ok = send_telegram(tg_body)
+print(f"Telegram: {'SENT' if tg_ok else 'FAILED'}")
+
 # Send WhatsApp
-wa_msg = f"*{subject}*\n\n{body}"
-wa_ok = send_whatsapp_message(settings.WA_MY_PHONE, wa_msg)
-print(f"WhatsApp: {'SENT' if wa_ok else 'FAILED'}")
+if settings.WA_MY_PHONE:
+    wa_ok = send_whatsapp_message(settings.WA_MY_PHONE, f"*{subject}*\n\n{body}")
+    print(f"WhatsApp: {'SENT' if wa_ok else 'FAILED'}")
 
 db.close()
