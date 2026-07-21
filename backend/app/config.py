@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     WA_ACCESS_TOKEN: str = ""
     WA_MY_PHONE: str = ""  # Your number with country code, no + (e.g. 919876543210)
 
+    # Telegram Bot (free, no expiry — preferred channel)
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+
     model_config = {"env_file": str(_env_file), "extra": "ignore"}
 
 

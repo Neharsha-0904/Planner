@@ -12,6 +12,9 @@ from app.database import SessionLocal
 from app.models.user import User
 from app.models.class_slot import ClassSlot
 from app.services.notification_service import send_push_to_user
+from app.integrations.telegram import send_telegram
+from app.integrations.whatsapp import send_whatsapp_message
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -45,10 +48,14 @@ def run_class_reminder():
                 .all()
             )
             for slot in slots:
-                title = f"📚 Class in 10 min: {slot.name}"
-                body = f"{slot.start_time.strftime('%H:%M')} — {slot.location or 'TBD'}"
-                send_push_to_user(user, title, body, data={"type": "class_reminder", "slot_id": str(slot.id)})
-                logger.info("Sent class reminder: %s at %s for %s", slot.name, slot.start_time, user.name)
+                title = f"Class in {int(minutes_until)} min: {slot.name}"
+                body_text = f"{slot.start_time.strftime('%H:%M')} — {slot.location or 'TBD'}"
+                send_push_to_user(user, title, body_text)
+                # Telegram
+                send_telegram(f"<b>Class in {int(minutes_until)} min</b>\n{slot.name}\n{slot.start_time.strftime('%H:%M')} — {slot.location or 'TBD'}")
+                # WhatsApp
+                if settings.WA_MY_PHONE:
+                    send_whatsapp_message(settings.WA_MY_PHONE, f"Class in {int(minutes_until)} min: {slot.name} | {slot.start_time.strftime('%H:%M')} | {slot.location or 'TBD'}")
     except Exception:
         logger.exception("Error in class reminder job")
     finally:

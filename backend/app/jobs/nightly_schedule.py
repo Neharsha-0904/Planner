@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.task import Task, TaskStatus, Priority
 from app.models.class_slot import ClassSlot
 from app.services.email_service import get_email_service
+from app.integrations.telegram import send_telegram
 from app.integrations.whatsapp import send_whatsapp_message
 from app.config import settings
 
@@ -89,10 +90,11 @@ def run_nightly_schedule():
 
             # Email
             email_service = get_email_service()
-            recipients = [user.email]
-            if user.notification_emails:
-                recipients.extend(user.notification_emails)
-            email_service.send(to=list(set(recipients)), subject=subject, body=body)
+            recipients = list(set([user.email] + (user.notification_emails or [])))
+            email_service.send(to=recipients, subject=subject, body=body)
+
+            # Telegram (preferred)
+            send_telegram(f"<b>{subject}</b>\n\n{body[:800]}")
 
             # WhatsApp
             if settings.WA_MY_PHONE:
